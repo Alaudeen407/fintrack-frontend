@@ -10,12 +10,12 @@ export default function FinSetSettingsView({ theme, onToggleTheme, currentUser, 
   }, []);
 
   const handleResetData = async () => {
-    if (!window.confirm('Reset database to FinSet demo data (₹15,700 balance, ₹8,500 income, ₹6,222 expenses)?')) {
+    if (!window.confirm('Clear all transactions and bills to start fresh with a clean database?')) {
       return;
     }
     try {
       await resetDatabase();
-      onShowToast('Database reset to FinSet demo data successfully in MongoDB Atlas & SQLite!', 'success');
+      onShowToast('All transaction and bill records cleared successfully in MongoDB Atlas & SQLite!', 'success');
       setTimeout(() => window.location.reload(), 800);
     } catch (err) {
       onShowToast('Failed to reset data', 'error');
@@ -109,7 +109,7 @@ export default function FinSetSettingsView({ theme, onToggleTheme, currentUser, 
             style={{ color: '#F59E0B', borderColor: 'var(--border-light)' }}
           >
             <RotateCcw size={14} />
-            <span>Reset Demo Data (₹15,700 Balance)</span>
+            <span>Clear All Data (Start Fresh)</span>
           </button>
         </div>
       </div>

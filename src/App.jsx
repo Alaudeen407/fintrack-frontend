@@ -36,11 +36,11 @@ export default function App() {
     if (saved) {
       try { return JSON.parse(saved); } catch {}
     }
-    // Default demo user matching FinSet mockup
+    // Default active user
     return {
-      name: 'Adaline Lively',
-      email: 'adalinect@gmail.com',
-      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80'
+      name: 'Alaudeen',
+      email: 'alaudeen@gmail.com',
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'
     };
   });
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -233,13 +233,14 @@ export default function App() {
             <div className="dashboard-split-grid">
               {/* Left Column: Line Area Chart + Bar Comparison Chart */}
               <div className="charts-column">
-                <FinSetBalanceOverviewChart />
-                <FinSetBudgetComparisonChart />
+                <FinSetBalanceOverviewChart summary={summary} />
+                <FinSetBudgetComparisonChart summary={summary} />
               </div>
 
               {/* Right Column: Statistics Donut Chart Card */}
               <div style={{ height: '100%' }}>
                 <FinSetStatisticsDonut 
+                  summary={summary}
                   onShowDetails={() => setActiveTab('excel-report')} 
                 />
               </div>
