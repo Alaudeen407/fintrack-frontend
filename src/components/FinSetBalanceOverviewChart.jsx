@@ -87,10 +87,10 @@ export default function FinSetBalanceOverviewChart() {
           <line x1="40" y1="125" x2="600" y2="125" stroke="#F0F2F7" strokeDasharray="3 3" />
 
           {/* Y-axis labels */}
-          <text x="5" y="24" fill="#B2B7C2" fontSize="9" fontFamily="Plus Jakarta Sans">$20,000</text>
-          <text x="5" y="59" fill="#B2B7C2" fontSize="9" fontFamily="Plus Jakarta Sans">$15,000</text>
-          <text x="5" y="94" fill="#B2B7C2" fontSize="9" fontFamily="Plus Jakarta Sans">$10,000</text>
-          <text x="9" y="129" fill="#B2B7C2" fontSize="9" fontFamily="Plus Jakarta Sans">$5,000</text>
+          <text x="5" y="24" fill="#B2B7C2" fontSize="9" fontFamily="Plus Jakarta Sans">₹20,000</text>
+          <text x="5" y="59" fill="#B2B7C2" fontSize="9" fontFamily="Plus Jakarta Sans">₹15,000</text>
+          <text x="5" y="94" fill="#B2B7C2" fontSize="9" fontFamily="Plus Jakarta Sans">₹10,000</text>
+          <text x="9" y="129" fill="#B2B7C2" fontSize="9" fontFamily="Plus Jakarta Sans">₹5,000</text>
 
           {/* Area fill */}
           <path d={areaPath} fill="url(#purpleAreaGrad)" />
@@ -125,7 +125,7 @@ export default function FinSetBalanceOverviewChart() {
           className="svg-tooltip-bubble"
           style={{ left: '26%', top: '48px' }}
         >
-          $15,000
+          ₹15,000
         </div>
 
         {/* X-axis date labels */}

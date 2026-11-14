@@ -10,7 +10,7 @@ export default function FinSetSettingsView({ theme, onToggleTheme, currentUser, 
   }, []);
 
   const handleResetData = async () => {
-    if (!window.confirm('Reset database to FinSet demo data ($15,700 balance, $8,500 income, $6,222 expenses)?')) {
+    if (!window.confirm('Reset database to FinSet demo data (₹15,700 balance, ₹8,500 income, ₹6,222 expenses)?')) {
       return;
     }
     try {
@@ -109,7 +109,7 @@ export default function FinSetSettingsView({ theme, onToggleTheme, currentUser, 
             style={{ color: '#F59E0B', borderColor: 'var(--border-light)' }}
           >
             <RotateCcw size={14} />
-            <span>Reset Demo Data ($15,700 Balance)</span>
+            <span>Reset Demo Data (₹15,700 Balance)</span>
           </button>
         </div>
       </div>

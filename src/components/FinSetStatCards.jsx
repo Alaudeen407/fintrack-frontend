@@ -13,13 +13,13 @@ export default function FinSetStatCards({ summary }) {
   const monthExpense = summary?.month_debit !== undefined ? summary.month_debit : 6222;
 
   const splitCurrency = (amount) => {
-    const formatted = Math.abs(amount).toLocaleString('en-US', {
+    const formatted = Math.abs(amount).toLocaleString('en-IN', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     });
     const parts = formatted.split('.');
     return {
-      main: `$${parts[0]}`,
+      main: `₹${parts[0]}`,
       cents: `.${parts[1]}`
     };
   };
@@ -35,7 +35,7 @@ export default function FinSetStatCards({ summary }) {
         <div className="stat-card-top">
           <span className="stat-card-title">Total balance</span>
           <div className="currency-select-pill">
-            <span>USD</span>
+            <span>INR</span>
             <ChevronDown size={11} />
           </div>
         </div>
@@ -52,7 +52,7 @@ export default function FinSetStatCards({ summary }) {
               <span>12.1%</span>
             </div>
             <div className="stat-comparison-text">
-              You have extra <strong>$1,700</strong><br />compared to last month
+              You have extra <strong>₹1,700</strong><br />compared to last month
             </div>
           </div>
 
@@ -78,7 +78,7 @@ export default function FinSetStatCards({ summary }) {
         <div className="stat-card-top">
           <span className="stat-card-title">Income</span>
           <div className="currency-select-pill">
-            <span>USD</span>
+            <span>INR</span>
             <ChevronDown size={11} />
           </div>
         </div>
@@ -95,7 +95,7 @@ export default function FinSetStatCards({ summary }) {
               <span>6.3%</span>
             </div>
             <div className="stat-comparison-text">
-              You earn extra <strong>$500</strong><br />compared to last month
+              You earn extra <strong>₹500</strong><br />compared to last month
             </div>
           </div>
 
@@ -121,7 +121,7 @@ export default function FinSetStatCards({ summary }) {
         <div className="stat-card-top">
           <span className="stat-card-title">Expense</span>
           <div className="currency-select-pill">
-            <span>USD</span>
+            <span>INR</span>
             <ChevronDown size={11} />
           </div>
         </div>
@@ -138,7 +138,7 @@ export default function FinSetStatCards({ summary }) {
               <span>2.4%</span>
             </div>
             <div className="stat-comparison-text">
-              You spent extra <strong>$1,222</strong><br />compared to last month
+              You spent extra <strong>₹1,222</strong><br />compared to last month
             </div>
           </div>
 

@@ -46,9 +46,9 @@ export default function FinSetBudgetComparisonChart() {
           fontSize: '0.68rem',
           color: '#B2B7C2'
         }}>
-          <span>$7,500</span>
-          <span>$5,000</span>
-          <span>$2,500</span>
+          <span>₹7,500</span>
+          <span>₹5,000</span>
+          <span>₹2,500</span>
         </div>
 
         {/* Bars Container */}
@@ -72,7 +72,7 @@ export default function FinSetBudgetComparisonChart() {
                 >
                   <span style={{ color: '#8C919D' }}>Exceeded</span>{' '}
                   <span style={{ color: '#8C919D', fontSize: '0.68rem' }}>by {item.excessPct}%</span>{' '}
-                  <strong>${item.excessVal}</strong>
+                  <strong>₹{item.excessVal}</strong>
                 </div>
               )}
 

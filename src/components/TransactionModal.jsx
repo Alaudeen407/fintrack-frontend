@@ -185,7 +185,7 @@ export default function TransactionModal({
 
             {/* Amount */}
             <div className="form-group">
-              <label className="form-label">Amount ($) *</label>
+              <label className="form-label">Amount (₹) *</label>
               <input
                 type="number"
                 step="0.01"

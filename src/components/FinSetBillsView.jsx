@@ -136,9 +136,9 @@ export default function FinSetBillsView({ onShowToast }) {
   };
 
   const formatCurrency = (val) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'INR',
       minimumFractionDigits: 2
     }).format(val || 0);
   };
@@ -439,7 +439,7 @@ export default function FinSetBillsView({ onShowToast }) {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                   <div className="finset-field">
-                    <label className="finset-label">Amount ($) *</label>
+                    <label className="finset-label">Amount (₹) *</label>
                     <input
                       type="number"
                       step="0.01"

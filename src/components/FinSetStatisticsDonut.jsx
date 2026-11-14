@@ -3,7 +3,7 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 
 export default function FinSetStatisticsDonut({ onShowDetails }) {
   // Categories from FinSet mockup:
-  // 1. Money transfer (40% - $2,500.00)
+  // 1. Money transfer (40% - ₹2,500.00)
   // 2. Cafe & Restaurants (~12%)
   // 3. Rent (~22%)
   // 4. Education (~10%)
@@ -92,17 +92,17 @@ export default function FinSetStatisticsDonut({ onShowDetails }) {
             </g>
           </svg>
 
-          {/* Callout badge on top right: 40% $2,500 */}
+          {/* Callout badge on top right: 40% ₹2,500 */}
           <div className="donut-callout-pill">
             <span style={{ fontSize: '0.62rem', color: '#8C919D', fontWeight: 600 }}>40%</span>
-            <span style={{ fontSize: '0.78rem', color: '#14171A', fontWeight: 800 }}>$2,500</span>
+            <span style={{ fontSize: '0.78rem', color: '#14171A', fontWeight: 800 }}>₹2,500</span>
           </div>
 
           {/* Center Info */}
           <div className="donut-center-info">
             <div className="donut-center-label">This month expence</div>
             <div className="donut-center-value">
-              <span>$</span>6,222<span className="cents">.00</span>
+              <span>₹</span>6,222<span className="cents">.00</span>
             </div>
           </div>
         </div>

@@ -173,7 +173,7 @@ export default function FinSetTransactionModal({
 
             {/* Amount */}
             <div className="finset-field">
-              <label className="finset-label">Amount ($) *</label>
+              <label className="finset-label">Amount (₹) *</label>
               <input
                 type="number"
                 step="0.01"
