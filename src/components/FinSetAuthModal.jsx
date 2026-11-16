@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Lock, Mail, User, Sparkles } from 'lucide-react';
+import { X, Lock, Mail, User } from 'lucide-react';
 import { loginUser, registerUser } from '../api';
 
 export default function FinSetAuthModal({ isOpen, onClose, onAuthSuccess }) {
@@ -29,20 +29,6 @@ export default function FinSetAuthModal({ isOpen, onClose, onAuthSuccess }) {
       onClose();
     } catch (err) {
       setError(err.message || 'Authentication failed');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleQuickDemoLogin = async () => {
-    setError('');
-    setIsLoading(true);
-    try {
-      const res = await loginUser('alaudeen@gmail.com', 'password123');
-      onAuthSuccess(res.user);
-      onClose();
-    } catch (err) {
-      setError('Could not log in: ' + err.message);
     } finally {
       setIsLoading(false);
     }
@@ -165,25 +151,6 @@ export default function FinSetAuthModal({ isOpen, onClose, onAuthSuccess }) {
             >
               {isLoading ? 'Processing...' : (tab === 'login' ? 'Sign In' : 'Create Free Account')}
             </button>
-
-            {/* Quick Demo Login Option */}
-            <div style={{
-              marginTop: '6px',
-              borderTop: '1px dashed var(--border-light)',
-              paddingTop: '12px',
-              textAlign: 'center'
-            }}>
-              <button
-                type="button"
-                className="pill-btn-white"
-                style={{ width: '100%', justifyContent: 'center', fontSize: '0.8rem' }}
-                onClick={handleQuickDemoLogin}
-                disabled={isLoading}
-              >
-                <Sparkles size={14} color="#7B61FF" />
-                <span>Quick Sign In (alaudeen@gmail.com)</span>
-              </button>
-            </div>
           </div>
         </form>
       </div>

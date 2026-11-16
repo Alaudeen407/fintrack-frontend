@@ -11,16 +11,15 @@ import {
   FileSpreadsheet, 
   Database,
   Sun,
-  Moon,
-  Sparkles
+  Moon
 } from 'lucide-react';
 import { loginUser, registerUser } from '../api';
 
 export default function FinSetLoginPage({ onAuthSuccess, onShowToast, theme, onToggleTheme }) {
   const [mode, setMode] = useState('login'); // 'login' or 'register'
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('alaudeen@gmail.com');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -47,12 +46,6 @@ export default function FinSetLoginPage({ onAuthSuccess, onShowToast, theme, onT
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleFillCredentials = (fillEmail, fillPass) => {
-    setEmail(fillEmail);
-    setPassword(fillPass);
-    setError('');
   };
 
   return (
@@ -194,7 +187,7 @@ export default function FinSetLoginPage({ onAuthSuccess, onShowToast, theme, onT
                 type="email"
                 className="finset-input"
                 style={{ paddingLeft: '40px' }}
-                placeholder="alaudeen@gmail.com"
+                placeholder="name@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -210,7 +203,7 @@ export default function FinSetLoginPage({ onAuthSuccess, onShowToast, theme, onT
                 type={showPassword ? 'text' : 'password'}
                 className="finset-input"
                 style={{ paddingLeft: '40px', paddingRight: '40px' }}
-                placeholder="••••••••"
+                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -258,39 +251,6 @@ export default function FinSetLoginPage({ onAuthSuccess, onShowToast, theme, onT
             )}
           </button>
         </form>
-
-        {/* Quick Fill Helper */}
-        {mode === 'login' && (
-          <div style={{
-            marginTop: '20px',
-            paddingTop: '16px',
-            borderTop: '1px solid var(--border-light)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            fontSize: '0.76rem',
-            color: 'var(--text-muted)'
-          }}>
-            <span>Default account: <strong>alaudeen@gmail.com</strong></span>
-            <button
-              type="button"
-              onClick={() => handleFillCredentials('alaudeen@gmail.com', 'password123')}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'var(--finset-purple)',
-                fontWeight: 700,
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px'
-              }}
-            >
-              <Sparkles size={12} />
-              <span>Fill</span>
-            </button>
-          </div>
-        )}
 
         {/* Feature Badges */}
         <div style={{
