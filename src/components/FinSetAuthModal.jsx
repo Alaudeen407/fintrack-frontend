@@ -38,11 +38,11 @@ export default function FinSetAuthModal({ isOpen, onClose, onAuthSuccess }) {
     setError('');
     setIsLoading(true);
     try {
-      const res = await loginUser('adalinect@gmail.com', 'password123');
+      const res = await loginUser('alaudeen@gmail.com', 'password123');
       onAuthSuccess(res.user);
       onClose();
     } catch (err) {
-      setError('Could not log in with demo account: ' + err.message);
+      setError('Could not log in: ' + err.message);
     } finally {
       setIsLoading(false);
     }
@@ -181,11 +181,8 @@ export default function FinSetAuthModal({ isOpen, onClose, onAuthSuccess }) {
                 disabled={isLoading}
               >
                 <Sparkles size={14} color="#7B61FF" />
-                <span>One-Click Demo Login (Adaline Lively)</span>
+                <span>Quick Sign In (alaudeen@gmail.com)</span>
               </button>
-              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block', marginTop: '6px' }}>
-                Demo credentials: adalinect@gmail.com / password123
-              </span>
             </div>
           </div>
         </form>

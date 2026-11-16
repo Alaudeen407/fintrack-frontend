@@ -12,6 +12,7 @@ import FinSetSettingsView from './components/FinSetSettingsView';
 import FinSetTransactionModal from './components/FinSetTransactionModal';
 import FinSetDeleteModal from './components/FinSetDeleteModal';
 import FinSetAuthModal from './components/FinSetAuthModal';
+import FinSetLoginPage from './components/FinSetLoginPage';
 import FinSetToast from './components/FinSetToast';
 import { 
   fetchTransactions, 
@@ -30,18 +31,13 @@ export default function App() {
     return localStorage.getItem('finset_theme') || 'light';
   });
 
-  // Auth state
+  // Auth state - starts null so app opens to login page first
   const [currentUser, setCurrentUser] = useState(() => {
     const saved = localStorage.getItem('finset_user');
     if (saved) {
       try { return JSON.parse(saved); } catch {}
     }
-    // Default active user
-    return {
-      name: 'Alaudeen',
-      email: 'alaudeen@gmail.com',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'
-    };
+    return null;
   });
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
@@ -104,13 +100,16 @@ export default function App() {
   }, [filters]);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    if (currentUser) {
+      loadData();
+    }
+  }, [currentUser, loadData]);
 
   // Auth handlers
   const handleAuthSuccess = (user) => {
     setCurrentUser(user);
     localStorage.setItem('finset_user', JSON.stringify(user));
+    setIsAuthModalOpen(false);
     showToast(`Welcome back, ${user.name}!`, 'success');
   };
 
@@ -162,6 +161,21 @@ export default function App() {
     setEditingTransaction(tx);
     setIsModalOpen(true);
   };
+
+  // If not logged in, open directly to Login page first
+  if (!currentUser) {
+    return (
+      <div className="finset-outer-frame">
+        <FinSetLoginPage
+          onAuthSuccess={handleAuthSuccess}
+          onShowToast={showToast}
+          theme={theme}
+          onToggleTheme={toggleTheme}
+        />
+        <FinSetToast toasts={toasts} onDismiss={dismissToast} />
+      </div>
+    );
+  }
 
   return (
     <div className="finset-outer-frame">
