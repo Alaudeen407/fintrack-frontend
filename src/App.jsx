@@ -9,10 +9,13 @@ import FinSetTransactionsView from './components/FinSetTransactionsView';
 import FinSetBillsView from './components/FinSetBillsView';
 import FinSetExcelReportView from './components/FinSetExcelReportView';
 import FinSetSettingsView from './components/FinSetSettingsView';
+import FinSetHelpView from './components/FinSetHelpView';
 import FinSetTransactionModal from './components/FinSetTransactionModal';
 import FinSetDeleteModal from './components/FinSetDeleteModal';
 import FinSetAuthModal from './components/FinSetAuthModal';
 import FinSetLoginPage from './components/FinSetLoginPage';
+import FinSetNotificationsPopover from './components/FinSetNotificationsPopover';
+import FinSetManageWidgetsModal from './components/FinSetManageWidgetsModal';
 import FinSetToast from './components/FinSetToast';
 import { 
   fetchTransactions, 
@@ -53,6 +56,21 @@ export default function App() {
     sort: 'date_desc'
   });
 
+  // Date Period Filter
+  const [datePeriod, setDatePeriod] = useState('this-month');
+
+  // Dashboard Widgets Customizer Configuration
+  const [widgetsConfig, setWidgetsConfig] = useState({
+    statCards: true,
+    balanceOverview: true,
+    budgetComparison: true,
+    statisticsDonut: true
+  });
+  const [isManageWidgetsOpen, setIsManageWidgetsOpen] = useState(false);
+
+  // Notifications Popover
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
@@ -84,8 +102,23 @@ export default function App() {
 
   const loadData = useCallback(async () => {
     try {
+      const activeFilters = { ...filters };
+      const now = new Date();
+      const curYear = now.getFullYear();
+      const curMonth = String(now.getMonth() + 1).padStart(2, '0');
+
+      if (datePeriod === 'this-month') {
+        activeFilters.startDate = `${curYear}-${curMonth}-01`;
+      } else if (datePeriod === 'last-month') {
+        const lastM = now.getMonth() === 0 ? 12 : now.getMonth();
+        const lastY = now.getMonth() === 0 ? curYear - 1 : curYear;
+        const lastMStr = String(lastM).padStart(2, '0');
+        activeFilters.startDate = `${lastY}-${lastMStr}-01`;
+        activeFilters.endDate = `${lastY}-${lastMStr}-31`;
+      }
+
       const [txList, sumData, cats] = await Promise.all([
-        fetchTransactions(filters),
+        fetchTransactions(activeFilters),
         fetchSummary(),
         fetchCategories()
       ]);
@@ -97,13 +130,65 @@ export default function App() {
     } finally {
       setIsLoading(false);
     }
-  }, [filters]);
+  }, [filters, datePeriod]);
 
   useEffect(() => {
     if (currentUser) {
       loadData();
     }
   }, [currentUser, loadData]);
+
+  // ==================== GLOBAL FUNCTION KEYS / SHORTCUTS ====================
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Ignore if user is currently typing in an input, textarea, or select
+      const activeTag = document.activeElement?.tagName?.toLowerCase();
+      if (['input', 'textarea', 'select'].includes(activeTag)) {
+        if (e.key === 'Escape') {
+          setIsModalOpen(false);
+          setIsAuthModalOpen(false);
+          setIsNotificationsOpen(false);
+          setIsManageWidgetsOpen(false);
+          setDeleteTarget(null);
+        }
+        return;
+      }
+
+      const key = e.key.toUpperCase();
+      if (e.key === 'Escape') {
+        setIsModalOpen(false);
+        setIsAuthModalOpen(false);
+        setIsNotificationsOpen(false);
+        setIsManageWidgetsOpen(false);
+        setDeleteTarget(null);
+      } else if (key === 'N' || e.key === '+') {
+        e.preventDefault();
+        setEditingTransaction(null);
+        setIsModalOpen(true);
+      } else if (key === 'T') {
+        e.preventDefault();
+        setActiveTab('transactions');
+      } else if (key === 'B') {
+        e.preventDefault();
+        setActiveTab('bills');
+      } else if (key === 'D' || key === 'A') {
+        e.preventDefault();
+        setActiveTab('analytics');
+      } else if (key === 'E') {
+        e.preventDefault();
+        setActiveTab('excel-report');
+      } else if (key === 'S') {
+        e.preventDefault();
+        setActiveTab('settings');
+      } else if (key === 'H' || e.key === '?') {
+        e.preventDefault();
+        setActiveTab('help');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Auth handlers
   const handleAuthSuccess = (user) => {
@@ -162,6 +247,35 @@ export default function App() {
     setIsModalOpen(true);
   };
 
+  // Quick navigation from Stat Cards to filtered Transactions
+  const handleNavigateFromCard = (filterType) => {
+    setFilters(prev => ({
+      ...prev,
+      type: filterType,
+      search: ''
+    }));
+    setActiveTab('transactions');
+  };
+
+  // Search button click handler in Topbar
+  const handleTopbarSearch = () => {
+    setActiveTab('transactions');
+    setTimeout(() => {
+      const searchInput = document.querySelector('.tx-search-input');
+      if (searchInput) {
+        searchInput.focus();
+        searchInput.select();
+      }
+    }, 100);
+  };
+
+  const handleToggleWidget = (widgetId) => {
+    setWidgetsConfig(prev => ({
+      ...prev,
+      [widgetId]: !prev[widgetId]
+    }));
+  };
+
   // If not logged in, open directly to Login page first
   if (!currentUser) {
     return (
@@ -180,7 +294,7 @@ export default function App() {
   return (
     <div className="finset-outer-frame">
       <div className="finset-canvas">
-        {/* Left Sidebar */}
+        {/* Left Sidebar with collapsible support & help link */}
         <FinSetSidebar 
           activeTab={activeTab} 
           onSelectTab={setActiveTab} 
@@ -193,17 +307,25 @@ export default function App() {
 
         {/* Main Content Area */}
         <main className="finset-main">
-          {/* Top Bar */}
+          {/* Top Bar with working actions */}
           <FinSetTopbar 
             activeTab={activeTab} 
             onOpenAddModal={handleOpenAddModal} 
             currentUser={currentUser}
             onOpenAuth={() => setIsAuthModalOpen(true)}
+            onOpenNotifications={() => setIsNotificationsOpen(true)}
+            onOpenManageWidgets={() => setIsManageWidgetsOpen(true)}
+            onSearchClick={handleTopbarSearch}
+            datePeriod={datePeriod}
+            onDatePeriodChange={setDatePeriod}
           />
 
-          {/* Top 3 Stat Cards (shown on Analytics, Dashboard, and Transactions) */}
-          {(activeTab === 'analytics' || activeTab === 'dashboard' || activeTab === 'transactions') && (
-            <FinSetStatCards summary={summary} />
+          {/* Top 3 Stat Cards (enabled by widgetsConfig and visible on analytics, dashboard, transactions) */}
+          {widgetsConfig.statCards && (activeTab === 'analytics' || activeTab === 'dashboard' || activeTab === 'transactions') && (
+            <FinSetStatCards 
+              summary={summary} 
+              onNavigateToTransactions={handleNavigateFromCard}
+            />
           )}
 
           {/* ==================== TAB CONTENT ROUTING ==================== */}
@@ -242,22 +364,36 @@ export default function App() {
             />
           )}
 
-          {/* 5. Analytics (The Exact FinSet Mockup Dashboard) */}
+          {/* 5. Help & Guide Center */}
+          {activeTab === 'help' && (
+            <FinSetHelpView 
+              onSelectTab={setActiveTab}
+              onOpenAddModal={handleOpenAddModal}
+            />
+          )}
+
+          {/* 6. Analytics & Dashboard Charts View */}
           {(activeTab === 'analytics' || activeTab === 'dashboard') && (
             <div className="dashboard-split-grid">
               {/* Left Column: Line Area Chart + Bar Comparison Chart */}
               <div className="charts-column">
-                <FinSetBalanceOverviewChart summary={summary} />
-                <FinSetBudgetComparisonChart summary={summary} />
+                {widgetsConfig.balanceOverview && (
+                  <FinSetBalanceOverviewChart summary={summary} />
+                )}
+                {widgetsConfig.budgetComparison && (
+                  <FinSetBudgetComparisonChart summary={summary} />
+                )}
               </div>
 
               {/* Right Column: Statistics Donut Chart Card */}
-              <div style={{ height: '100%' }}>
-                <FinSetStatisticsDonut 
-                  summary={summary}
-                  onShowDetails={() => setActiveTab('excel-report')} 
-                />
-              </div>
+              {widgetsConfig.statisticsDonut && (
+                <div style={{ height: '100%' }}>
+                  <FinSetStatisticsDonut 
+                    summary={summary}
+                    onShowDetails={() => setActiveTab('excel-report')} 
+                  />
+                </div>
+              )}
             </div>
           )}
         </main>
@@ -288,6 +424,29 @@ export default function App() {
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         onAuthSuccess={handleAuthSuccess}
+      />
+
+      {/* Notifications Popover */}
+      <FinSetNotificationsPopover
+        isOpen={isNotificationsOpen}
+        onClose={() => setIsNotificationsOpen(false)}
+        summary={summary}
+        onNavigateToBills={() => {
+          setActiveTab('bills');
+          setIsNotificationsOpen(false);
+        }}
+        onNavigateToTransactions={() => {
+          setActiveTab('transactions');
+          setIsNotificationsOpen(false);
+        }}
+      />
+
+      {/* Manage Dashboard Widgets Modal */}
+      <FinSetManageWidgetsModal
+        isOpen={isManageWidgetsOpen}
+        onClose={() => setIsManageWidgetsOpen(false)}
+        widgetsConfig={widgetsConfig}
+        onToggleWidget={handleToggleWidget}
       />
 
       {/* Toast Alerts */}

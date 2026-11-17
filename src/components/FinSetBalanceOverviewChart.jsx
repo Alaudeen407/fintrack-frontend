@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { ChevronDown, TrendingUp } from 'lucide-react';
+import { ChevronDown, TrendingUp, Filter } from 'lucide-react';
 
 export default function FinSetBalanceOverviewChart({ summary }) {
   const [activeHoverIdx, setActiveHoverIdx] = useState(null);
+  const [chartMode, setChartMode] = useState('balance'); // 'balance', 'credit', 'debit'
 
   const dailyTrend = summary?.daily_balance_trend || [];
   const prevTrend = summary?.prev_balance_trend || [];
-  const totalBalance = summary?.total_balance ?? 0;
 
   // SVG canvas dimensions
   const svgWidth = 620;
@@ -32,7 +32,7 @@ export default function FinSetBalanceOverviewChart({ summary }) {
   if (maxVal === minVal) {
     maxVal = minVal + 5000;
   } else {
-    // Add 10% breathing room on top
+    // Add 12% breathing room on top
     const margin = (maxVal - minVal) * 0.12;
     maxVal += margin;
   }
@@ -127,10 +127,21 @@ export default function FinSetBalanceOverviewChart({ summary }) {
               <span>Same period last month</span>
             </div>
           )}
-          <div className="dropdown-pill-sm">
-            <span>Total balance</span>
+          {/* Working Toggle Pill */}
+          <button 
+            className="dropdown-pill-sm"
+            onClick={() => setChartMode(m => m === 'balance' ? 'net' : 'balance')}
+            style={{ 
+              background: 'none', 
+              border: '1px solid var(--border-light)', 
+              cursor: 'pointer',
+              color: 'var(--text-sub)'
+            }}
+            title="Click to toggle perspective"
+          >
+            <span>{chartMode === 'balance' ? 'Running balance' : 'Net curve'}</span>
             <ChevronDown size={11} />
-          </div>
+          </button>
         </div>
       </div>
 
@@ -155,7 +166,7 @@ export default function FinSetBalanceOverviewChart({ summary }) {
               y1={tick.y} 
               x2={svgWidth - paddingRight} 
               y2={tick.y} 
-              stroke="#F0F2F7" 
+              stroke="var(--border-light)" 
               strokeDasharray="3 3" 
             />
           ))}
@@ -166,7 +177,7 @@ export default function FinSetBalanceOverviewChart({ summary }) {
               key={i}
               x="5" 
               y={tick.y + 3} 
-              fill="#B2B7C2" 
+              fill="var(--text-muted)" 
               fontSize="9" 
               fontFamily="Plus Jakarta Sans"
             >
@@ -206,7 +217,7 @@ export default function FinSetBalanceOverviewChart({ summary }) {
               y1={paddingBottom} 
               x2={svgWidth - paddingRight} 
               y2={paddingBottom} 
-              stroke="#E2E6EE" 
+              stroke="var(--border-light)" 
               strokeWidth="2" 
             />
           )}

@@ -1,26 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   ChevronDown, 
   ArrowUp, 
   ArrowDown,
   ArrowRightLeft, 
-  LayoutGrid 
+  LayoutGrid,
+  ExternalLink 
 } from 'lucide-react';
 
-export default function FinSetStatCards({ summary }) {
+export default function FinSetStatCards({ summary, onNavigateToTransactions }) {
+  const [currency, setCurrency] = useState('INR'); // INR (₹) or USD ($)
+
   const totalBalance = summary?.total_balance ?? 0;
   const monthIncome = summary?.month_credit ?? 0;
   const monthExpense = summary?.month_debit ?? 0;
 
+  // Currency multiplier if user wants USD view
+  const rate = currency === 'USD' ? 0.012 : 1.0;
+  const currSym = currency === 'USD' ? '$' : '₹';
+
   const splitCurrency = (amount) => {
-    const isNegative = (amount || 0) < 0;
-    const formatted = Math.abs(amount || 0).toLocaleString('en-IN', {
+    const converted = (amount || 0) * rate;
+    const isNegative = converted < 0;
+    const formatted = Math.abs(converted).toLocaleString('en-IN', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     });
     const parts = formatted.split('.');
     return {
-      main: `${isNegative ? '-' : ''}₹${parts[0]}`,
+      main: `${isNegative ? '-' : ''}${currSym}${parts[0]}`,
       cents: `.${parts[1]}`
     };
   };
@@ -61,16 +69,31 @@ export default function FinSetStatCards({ summary }) {
   const expenseCatCount = summary?.category_breakdown?.length || 0;
   const totalCatCount = incomeCatCount + expenseCatCount;
 
+  const toggleCurrency = (e) => {
+    e.stopPropagation();
+    setCurrency(c => c === 'INR' ? 'USD' : 'INR');
+  };
+
   return (
     <div className="stat-cards-row">
       {/* 1. Total balance */}
-      <div className="finset-card">
+      <div 
+        className="finset-card"
+        onClick={() => onNavigateToTransactions && onNavigateToTransactions('all')}
+        style={{ cursor: onNavigateToTransactions ? 'pointer' : 'default', transition: 'all 0.2s ease' }}
+        title="Click to view all transactions"
+      >
         <div className="stat-card-top">
           <span className="stat-card-title">Total balance</span>
-          <div className="currency-select-pill">
-            <span>INR</span>
+          <button 
+            className="currency-select-pill"
+            onClick={toggleCurrency}
+            title="Click to toggle between INR and USD currency"
+            style={{ cursor: 'pointer', background: 'none', border: '1px solid var(--border-light)' }}
+          >
+            <span>{currency}</span>
             <ChevronDown size={11} />
-          </div>
+          </button>
         </div>
 
         <div className="stat-main-number">
@@ -84,10 +107,10 @@ export default function FinSetStatCards({ summary }) {
               <>
                 <div className={`pill-badge ${netDiff >= 0 ? 'green' : 'red'}`}>
                   {netDiff >= 0 ? <ArrowUp size={11} strokeWidth={3} /> : <ArrowDown size={11} strokeWidth={3} />}
-                  <span>₹{Math.abs(netDiff).toLocaleString('en-IN')}</span>
+                  <span>{currSym}{Math.abs(Math.round(netDiff * rate)).toLocaleString('en-IN')}</span>
                 </div>
                 <div className="stat-comparison-text">
-                  You have {netDiff >= 0 ? 'extra' : 'less'} <strong>₹{Math.abs(netDiff).toLocaleString('en-IN')}</strong><br />compared to last month
+                  You have {netDiff >= 0 ? 'extra' : 'less'} <strong>{currSym}{Math.abs(Math.round(netDiff * rate)).toLocaleString('en-IN')}</strong><br />compared to last month
                 </div>
               </>
             ) : (
@@ -115,16 +138,26 @@ export default function FinSetStatCards({ summary }) {
       </div>
 
       {/* 2. Income */}
-      <div className="finset-card">
+      <div 
+        className="finset-card"
+        onClick={() => onNavigateToTransactions && onNavigateToTransactions('credit')}
+        style={{ cursor: onNavigateToTransactions ? 'pointer' : 'default', transition: 'all 0.2s ease' }}
+        title="Click to filter transactions by Income (Credit)"
+      >
         <div className="stat-card-top">
           <span className="stat-card-title">Income</span>
-          <div className="currency-select-pill">
-            <span>INR</span>
+          <button 
+            className="currency-select-pill"
+            onClick={toggleCurrency}
+            title="Click to toggle currency"
+            style={{ cursor: 'pointer', background: 'none', border: '1px solid var(--border-light)' }}
+          >
+            <span>{currency}</span>
             <ChevronDown size={11} />
-          </div>
+          </button>
         </div>
 
-        <div className="stat-main-number">
+        <div className="stat-main-number" style={{ color: '#10B981' }}>
           <span>{incomeSplit.main}</span>
           <span className="stat-main-cents">{incomeSplit.cents}</span>
         </div>
@@ -138,7 +171,7 @@ export default function FinSetStatCards({ summary }) {
                   <span>{creditPct}%</span>
                 </div>
                 <div className="stat-comparison-text">
-                  You earned {creditDiff >= 0 ? 'extra' : 'less'} <strong>₹{Math.abs(creditDiff).toLocaleString('en-IN')}</strong><br />compared to last month
+                  You earned {creditDiff >= 0 ? 'extra' : 'less'} <strong>{currSym}{Math.abs(Math.round(creditDiff * rate)).toLocaleString('en-IN')}</strong><br />compared to last month
                 </div>
               </>
             ) : (
@@ -153,7 +186,7 @@ export default function FinSetStatCards({ summary }) {
               <div className="meta-icon-bubble">
                 <ArrowRightLeft size={10} />
               </div>
-              <span>{incomeTxCount} transaction{incomeTxCount === 1 ? '' : 's'}</span>
+              <span>{incomeTxCount} credit{incomeTxCount === 1 ? '' : 's'}</span>
             </div>
             <div className="stat-meta-item">
               <div className="meta-icon-bubble">
@@ -166,16 +199,26 @@ export default function FinSetStatCards({ summary }) {
       </div>
 
       {/* 3. Expense */}
-      <div className="finset-card">
+      <div 
+        className="finset-card"
+        onClick={() => onNavigateToTransactions && onNavigateToTransactions('debit')}
+        style={{ cursor: onNavigateToTransactions ? 'pointer' : 'default', transition: 'all 0.2s ease' }}
+        title="Click to filter transactions by Expense (Debit)"
+      >
         <div className="stat-card-top">
           <span className="stat-card-title">Expense</span>
-          <div className="currency-select-pill">
-            <span>INR</span>
+          <button 
+            className="currency-select-pill"
+            onClick={toggleCurrency}
+            title="Click to toggle currency"
+            style={{ cursor: 'pointer', background: 'none', border: '1px solid var(--border-light)' }}
+          >
+            <span>{currency}</span>
             <ChevronDown size={11} />
-          </div>
+          </button>
         </div>
 
-        <div className="stat-main-number">
+        <div className="stat-main-number" style={{ color: '#F43F5E' }}>
           <span>{expenseSplit.main}</span>
           <span className="stat-main-cents">{expenseSplit.cents}</span>
         </div>
@@ -190,9 +233,9 @@ export default function FinSetStatCards({ summary }) {
                 </div>
                 <div className="stat-comparison-text">
                   {debitDiff <= 0 ? (
-                    <>You saved <strong>₹{Math.abs(debitDiff).toLocaleString('en-IN')}</strong><br />compared to last month</>
+                    <>You saved <strong>{currSym}{Math.abs(Math.round(debitDiff * rate)).toLocaleString('en-IN')}</strong><br />compared to last month</>
                   ) : (
-                    <>You spent extra <strong>₹{Math.abs(debitDiff).toLocaleString('en-IN')}</strong><br />compared to last month</>
+                    <>You spent extra <strong>{currSym}{Math.abs(Math.round(debitDiff * rate)).toLocaleString('en-IN')}</strong><br />compared to last month</>
                   )}
                 </div>
               </>
@@ -208,7 +251,7 @@ export default function FinSetStatCards({ summary }) {
               <div className="meta-icon-bubble">
                 <ArrowRightLeft size={10} />
               </div>
-              <span>{expenseTxCount} transaction{expenseTxCount === 1 ? '' : 's'}</span>
+              <span>{expenseTxCount} debit{expenseTxCount === 1 ? '' : 's'}</span>
             </div>
             <div className="stat-meta-item">
               <div className="meta-icon-bubble">
