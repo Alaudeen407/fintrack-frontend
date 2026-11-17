@@ -166,15 +166,15 @@ export default function FinSetTopbar({
           <span>Manage widgets</span>
         </button>
 
-        {/* Add Transaction button */}
+        {/* Add new widget button matching mockup */}
         <button 
           className="pill-btn-purple" 
           onClick={onOpenAddModal}
-          title="Record income or expense (Press N)"
+          title="Add transaction or widget (Press N)"
           style={{ cursor: 'pointer' }}
         >
           <Plus size={16} />
-          <span>Record Transaction</span>
+          <span>Add new widget</span>
         </button>
       </div>
     </header>

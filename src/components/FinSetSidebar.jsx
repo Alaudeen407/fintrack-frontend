@@ -28,9 +28,9 @@ export default function FinSetSidebar({
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutGrid },
-    { id: 'analytics', label: 'Analytics', icon: TrendingUp },
     { id: 'transactions', label: 'Transactions', icon: ArrowLeftRight },
-    { id: 'bills', label: 'Monthly Bills', icon: CalendarClock },
+    { id: 'bills', label: 'Wallet & Bills', icon: CalendarClock },
+    { id: 'analytics', label: 'Analytics', icon: TrendingUp },
     { id: 'excel-report', label: 'Excel Reports', icon: FileSpreadsheet },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
